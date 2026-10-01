@@ -1,14 +1,8 @@
-# FlowFi V28 — distribución limpia
+# FlowFi V29
 
-Esta versión no contiene movimientos, préstamos, saldos ni otros datos personales del creador.
-Cada usuario empieza con una cuenta Principal vacía y sus datos se guardan localmente en su propio navegador/dispositivo.
-
-## Publicación
-Sube el contenido de esta carpeta a un hosting HTTPS estático (GitHub Pages, Netlify, Vercel, Cloudflare Pages, etc.).
-
-## iPhone
-Abrir la URL en Safari → Compartir → Añadir a pantalla de inicio → Abrir como app web.
-
-
-## V28
-Formulario de movimientos optimizado para móvil: selector de categoría plegable, opciones avanzadas compactas (dividir, deuda/préstamo, gasto fijo), botón de guardado sticky y actualización PWA más fiable sin tocar los datos locales del usuario.
+Actualización beta:
+- Al editar un gasto o ingreso se puede convertir en movimiento fijo mensual.
+- Los ingresos también pueden crearse como fijos desde el formulario normal.
+- Si un movimiento ya estaba vinculado a un fijo, editarlo actualiza ese fijo.
+- Si se desactiva la opción de fijo al editar, se elimina esa recurrencia vinculada.
+- Se mantiene la misma clave de almacenamiento local para conservar los datos existentes.

@@ -197,7 +197,7 @@ button{cursor:pointer}
       <label>Nota<input id="tx-note" maxlength="80" placeholder="Opcional" /></label>
 
       <details id="tx-advanced-options" class="advanced-options">
-        <summary>Más opciones <span>Dividir · deuda · gasto fijo</span></summary>
+        <summary>Más opciones <span id="tx-advanced-hint">Dividir · deuda · gasto fijo</span></summary>
         <div class="advanced-options-body">
           <div id="tx-split-wrap" class="fixed-toggle">
             <div class="fixed-toggle-row"><div class="fixed-toggle-copy"><b>Dividir movimiento</b><span>Reparte un pago entre varias categorías.</span></div><label class="switch"><input id="tx-split-toggle" type="checkbox"/><span class="switch-track"></span></label></div>
@@ -214,10 +214,10 @@ button{cursor:pointer}
 
           <div id="tx-fixed-wrap" class="fixed-toggle">
             <div class="fixed-toggle-row">
-              <div class="fixed-toggle-copy"><b>Hacerlo gasto fijo mensual</b><span>Lo registra ahora y lo repetirá en próximos ciclos.</span></div>
-              <label class="switch" aria-label="Convertir en gasto fijo"><input id="tx-make-fixed" type="checkbox"/><span class="switch-track"></span></label>
+              <div class="fixed-toggle-copy"><b id="tx-fixed-title">Hacerlo gasto fijo mensual</b><span id="tx-fixed-desc">Lo registra ahora y lo repetirá en próximos ciclos.</span></div>
+              <label class="switch" aria-label="Convertir en movimiento fijo"><input id="tx-make-fixed" type="checkbox"/><span class="switch-track"></span></label>
             </div>
-            <div id="tx-fixed-extra" class="fixed-extra hidden"><label>Nombre del gasto fijo<input id="tx-fixed-name" maxlength="50" placeholder="Ej. Alquiler, Netflix, gimnasio..." /></label></div>
+            <div id="tx-fixed-extra" class="fixed-extra hidden"><label><span id="tx-fixed-name-label">Nombre del gasto fijo</span><input id="tx-fixed-name" maxlength="50" placeholder="Ej. Alquiler, nómina, gimnasio..." /></label></div>
           </div>
         </div>
       </details>
@@ -1011,7 +1011,7 @@ button{cursor:pointer}
       <div class="card" style="margin-bottom:14px"><h3>Situación financiera global</h3><p>Los saldos conciliados se actualizan con los movimientos que registres desde ese momento.</p><div class="finance-overview"><div class="stats-kpi"><span>Activos</span><b class="positive">${fmt(accountBalanceTotal())}</b></div><div class="stats-kpi"><span>Deudas</span><b class="negative">${fmt(totalLiabilities())}</b></div><div class="stats-kpi"><span>Patrimonio neto</span><b class="${netWorth()>=0?'positive':'negative'}">${fmt(netWorth())}</b></div></div><div class="account-manager">${details.map((a,i)=>{const projected=accountProjectedBalance(a),diff=projected-Number(a.balance||0);return `<div class="account-manager-row" style="grid-template-columns:1fr 108px auto auto"><div class="account-meta"><b>${escapeHtml(a.name)}</b><span>${escapeHtml(a.type||'Banco')} · FlowFi ${fmt(projected)}</span>${a.reconciledAtMs?`<div class="reconcile-meta">Conciliada ${new Date(a.reconciledAtMs).toLocaleDateString('es-ES')}</div>`:''}</div><input class="account-balance-input" data-account-balance="${i}" inputmode="decimal" value="${Number(projected).toFixed(2).replace('.',',')}" aria-label="Saldo real ${escapeHtml(a.name)}"/><button class="secondary-btn" data-reconcile-account="${i}">Conciliar</button><button class="delete-btn" data-delete-account="${i}" aria-label="Eliminar cuenta">×</button></div>`}).join('')}</div><div class="form-grid" style="margin-top:12px"><label>Nombre<input id="new-account" class="account-name-input" maxlength="30" placeholder="Ej. CaixaBank"/></label><label>Tipo<select id="new-account-type" class="settings-select"><option>Banco</option><option>Ahorro</option><option>Inversión</option><option>Otra</option></select></label></div><label style="display:grid;gap:6px;margin-top:8px">Saldo actual<input id="new-account-balance" class="account-name-input" inputmode="decimal" placeholder="0,00"/></label><button id="add-account" class="secondary-btn" style="margin-top:10px;width:100%">+ Añadir cuenta</button><div class="notice">Conciliar significa decirle a FlowFi cuál es el saldo real de esa cuenta hoy. Desde ahí calcula los cambios con tus movimientos y transferencias.</div></div>
       <div class="card" style="margin-bottom:14px"><h3>Ciclo financiero</h3><p>Adáptalo a tu fecha de cobro. El ciclo mensual termina el día anterior al siguiente inicio.</p><div class="cycle-settings-grid"><label>Día de inicio<select id="cycle-start-day" class="settings-select">${Array.from({length:28},(_,i)=>i+1).map(d=>`<option value="${d}" ${d===cycleStartDay()?'selected':''}>Día ${d}</option>`).join('')}</select></label><label>Semana empieza<select id="week-start-day" class="settings-select">${weekdays.map((n,i)=>`<option value="${i}" ${i===Number(state.settings.weekStartsOn??1)?'selected':''}>${n}</option>`).join('')}</select></label></div><div class="notice">Tu ciclo actual: ${dayFmt.format(cycleBounds(currentCycleMonth(now)).start)} → ${dayFmt.format(cycleBounds(currentCycleMonth(now)).end)}.</div></div>
       <div class="card" style="margin-bottom:14px"><h3>Categorías personalizadas</h3><p>Las categorías de sistema se conservan; aquí puedes retirar las que hayas creado tú.</p>${custom?`<div class="simple-list" style="margin-top:10px">${custom}</div>`:'<div class="muted" style="margin-top:8px">No has creado categorías personalizadas.</div>'}</div>
-      <div class="settings-group"><div class="settings-row"><div class="settings-copy"><b>Datos locales</b><span>Movimientos, saldos y deudas se guardan en este dispositivo.</span></div><span class="tag">LOCAL</span></div><div class="settings-row"><div class="settings-copy"><b>Face ID / biometría</b><span>Queda reservada para la app iOS nativa; una PWA no puede garantizar el mismo bloqueo seguro.</span></div><span class="tag">NATIVA</span></div><div class="settings-row"><div class="settings-copy"><b>Historial Monefy cargado</b><span>${state.source?`${state.source.activeTransactions} movimientos · ${state.source.from} → ${state.source.to}`:'Sin importación inicial'}</span></div><span class="tag">LISTO</span></div><div class="settings-row"><div class="settings-copy"><b>Borrar todos los datos</b><span>Elimina movimientos, objetivos, presupuestos, fijos, cuentas y deudas.</span></div><button id="wipe-btn" class="negative">Borrar</button></div></div><div class="card"><h3>FlowFi V28 Beta</h3><p>Formulario de movimientos optimizado para móvil: categoría compacta, opciones avanzadas plegables y guardado siempre accesible. Mantiene estadísticas, calendario, Excel, préstamos y PWA.</p></div>`;
+      <div class="settings-group"><div class="settings-row"><div class="settings-copy"><b>Datos locales</b><span>Movimientos, saldos y deudas se guardan en este dispositivo.</span></div><span class="tag">LOCAL</span></div><div class="settings-row"><div class="settings-copy"><b>Face ID / biometría</b><span>Queda reservada para la app iOS nativa; una PWA no puede garantizar el mismo bloqueo seguro.</span></div><span class="tag">NATIVA</span></div><div class="settings-row"><div class="settings-copy"><b>Historial Monefy cargado</b><span>${state.source?`${state.source.activeTransactions} movimientos · ${state.source.from} → ${state.source.to}`:'Sin importación inicial'}</span></div><span class="tag">LISTO</span></div><div class="settings-row"><div class="settings-copy"><b>Borrar todos los datos</b><span>Elimina movimientos, objetivos, presupuestos, fijos, cuentas y deudas.</span></div><button id="wipe-btn" class="negative">Borrar</button></div></div><div class="card"><h3>FlowFi V29 Beta</h3><p>Formulario de movimientos optimizado para móvil: categoría compacta, opciones avanzadas plegables y guardado siempre accesible. Mantiene estadísticas, calendario, Excel, préstamos y PWA.</p></div>`;
     el('import-btn').addEventListener('click',()=>el('import-dialog').showModal()); el('export-csv').addEventListener('click',exportCSV); el('export-excel').addEventListener('click',exportExcel); el('export-json').addEventListener('click',exportJSON);
     document.querySelectorAll('[data-reconcile-account]').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.reconcileAccount),inp=document.querySelector(`[data-account-balance="${i}"]`),a=state.accountDetails[i];if(!a)return;const v=parseMoney(inp.value);a.balance=v;a.reconciledBalance=v;a.reconciledAtMs=Date.now();saveState();render();toast('Cuenta conciliada');}));
     el('add-account').addEventListener('click',()=>{const v=el('new-account').value.trim(),type=el('new-account-type').value,balance=parseMoney(el('new-account-balance').value);if(!v)return toast('Escribe un nombre');if(state.accounts.includes(v))return toast('Esa cuenta ya existe');state.accounts.push(v);state.accountDetails.push({name:v,type,balance,reconciledBalance:balance,reconciledAtMs:Date.now()});saveState();render();toast('Cuenta añadida');});
@@ -1047,12 +1047,20 @@ button{cursor:pointer}
   function fillAccountSelect(id,preferred=null){const node=el(id);if(!node)return;node.innerHTML=state.accounts.map(a=>`<option ${a===preferred?'selected':''}>${escapeHtml(a)}</option>`).join('');}
   function fillLiabilitySelect(id,preferred=''){ const node=el(id); if(!node) return; const items=(state.liabilities||[]); node.innerHTML='<option value="">Sin vincular</option>'+items.map(l=>`<option value="${l.id}" ${l.id===preferred?'selected':''}>${escapeHtml(l.name)} · pendiente ${fmt(l.balance)}</option>`).join(''); }
   function fillAccounts(preferred=null){fillAccountSelect('tx-account',preferred);}
-  function syncLiabilityFixedVisibility(){ const linked=Boolean(el('tx-liability-link')?.value); if(el('tx-fixed-wrap')) el('tx-fixed-wrap').classList.toggle('hidden',txType!=='expense'||!!editingTxId||linked); }
+  function syncLiabilityFixedVisibility(){
+    const linked=Boolean(el('tx-liability-link')?.value);
+    if(el('tx-fixed-wrap')) el('tx-fixed-wrap').classList.toggle('hidden',txType==='transfer'||(txType==='expense'&&linked)||el('tx-split-toggle')?.checked);
+  }
   function syncTransactionMode(){
-    const transfer=txType==='transfer', expense=txType==='expense';
+    const transfer=txType==='transfer', expense=txType==='expense', income=txType==='income';
     el('tx-standard-fields').classList.toggle('hidden',transfer); el('tx-transfer-fields').classList.toggle('hidden',!transfer);
-    el('tx-advanced-options').classList.toggle('hidden',!expense||transfer); el('tx-split-wrap').classList.toggle('hidden',!expense||transfer); el('tx-liability-wrap').classList.toggle('hidden',!expense||transfer); el('tx-fixed-wrap').classList.toggle('hidden',!expense||transfer||!!editingTxId);
+    el('tx-advanced-options').classList.toggle('hidden',transfer); el('tx-split-wrap').classList.toggle('hidden',!expense||transfer); el('tx-liability-wrap').classList.toggle('hidden',!expense||transfer); el('tx-fixed-wrap').classList.toggle('hidden',transfer);
+    if(el('tx-advanced-hint')) el('tx-advanced-hint').textContent=expense?'Dividir · deuda · gasto fijo':'Ingreso fijo';
+    if(el('tx-fixed-title')) el('tx-fixed-title').textContent=income?'Hacerlo ingreso fijo mensual':'Hacerlo gasto fijo mensual';
+    if(el('tx-fixed-name-label')) el('tx-fixed-name-label').textContent=income?'Nombre del ingreso fijo':'Nombre del gasto fijo';
+    if(el('tx-fixed-desc')) el('tx-fixed-desc').textContent=editingTxId?'Puedes vincular o desvincular este movimiento de tus fijos mensuales.':'Lo registra ahora y lo repetirá en próximos ciclos.';
     if(transfer){el('tx-split-toggle').checked=false;el('tx-split-extra').classList.add('hidden');el('tx-make-fixed').checked=false;el('tx-fixed-extra').classList.add('hidden'); if(el('tx-liability-link')) el('tx-liability-link').value='';}
+    syncLiabilityFixedVisibility();
     el('transaction-title').textContent=editingTxId?'Editar movimiento':(transfer?'Transferir entre cuentas':expense?'Añadir gasto':'Añadir ingreso');
   }
   function openTransaction(forcedType=null,editId=null){
@@ -1062,8 +1070,11 @@ button{cursor:pointer}
     el('save-transaction').textContent=existing?'Guardar cambios':(txType==='transfer'?'Guardar transferencia':'Guardar movimiento'); el('tx-amount').value=existing?String(existing.amount).replace('.',','):(linkedPreset?.payment?String(linkedPreset.payment).replace('.',','):'');el('tx-note').value=existing?.note||(linkedPreset?.name||'');el('tx-date').value=existing?.date||pendingTransactionDate||isoLocal();el('tx-transfer-date').value=existing?.date||pendingTransactionDate||isoLocal();
     fillAccounts(existing?.account);fillAccountSelect('tx-from-account',existing?.fromAccount||state.accounts[0]);fillAccountSelect('tx-to-account',existing?.toAccount||state.accounts[1]||state.accounts[0]);fillLiabilitySelect('tx-liability-link', existing?.liabilityId || pendingLiabilityLinkId || ''); if(el('tx-liability-mode')) el('tx-liability-mode').value=existing?.liabilityMode||'installment'; if(linkedPreset && expenseCategories().find(([n])=>n==='Facturas')) selectedCategory='Facturas'; renderCategoryChips(); el('category-chips').classList.add('hidden'); el('tx-category-toggle').setAttribute('aria-expanded','false');
     splitDraft=Array.isArray(existing?.splits)?existing.splits.map(s=>({...s})) : []; el('tx-split-toggle').checked=splitDraft.length>0; el('tx-split-extra').classList.toggle('hidden',!splitDraft.length); if(splitDraft.length)renderSplitRows();
-    const hasLoan=Boolean(existing?.liabilityId||linkedPreset); el('tx-liability-wrap').open=hasLoan; el('tx-advanced-options').open=Boolean(splitDraft.length||hasLoan);
-    const fixedToggle=el('tx-make-fixed'),fixedExtra=el('tx-fixed-extra');fixedToggle.checked=false;fixedExtra.classList.add('hidden');el('tx-fixed-name').value='';pendingLiabilityLinkId=null;pendingTransactionDate=null;syncTransactionMode();syncLiabilityFixedVisibility();el('transaction-dialog').showModal();setTimeout(()=>el('tx-amount').focus(),120);
+    const hasLoan=Boolean(existing?.liabilityId||linkedPreset); el('tx-liability-wrap').open=hasLoan;
+    const existingRecurring=existing?.recurringId?state.recurring.find(r=>r.id===existing.recurringId):null;
+    const fixedToggle=el('tx-make-fixed'),fixedExtra=el('tx-fixed-extra');fixedToggle.checked=Boolean(existingRecurring);fixedExtra.classList.toggle('hidden',!existingRecurring);el('tx-fixed-name').value=existingRecurring?.name||'';
+    el('tx-advanced-options').open=Boolean(splitDraft.length||hasLoan||existingRecurring);
+    pendingLiabilityLinkId=null;pendingTransactionDate=null;syncTransactionMode();syncLiabilityFixedVisibility();el('transaction-dialog').showModal();setTimeout(()=>el('tx-amount').focus(),120);
   }
   function renderCategoryChips(){
     if(txType==='transfer'){el('category-chips').innerHTML='';return;}
@@ -1084,8 +1095,9 @@ button{cursor:pointer}
     const note=el('tx-note').value.trim();
     if(txType==='transfer'){
       const existing=editingTxId?state.transactions.find(t=>t.id===editingTxId):null; if(existing?.liabilityId) reverseLiabilityPayment(existing);
+      if(existing?.recurringId) state.recurring=state.recurring.filter(r=>r.id!==existing.recurringId);
       const from=el('tx-from-account').value,to=el('tx-to-account').value,date=el('tx-transfer-date').value||isoLocal();if(!from||!to||from===to){toast('Elige dos cuentas distintas');return;}
-      const payload={type:'transfer',amount,category:'Transferencia',account:from,fromAccount:from,toAccount:to,date,note};
+      const payload={type:'transfer',amount,category:'Transferencia',account:from,fromAccount:from,toAccount:to,date,note,recurringId:'',fixedExpense:false,fixedMovement:false};
       if(editingTxId){const idx=state.transactions.findIndex(t=>t.id===editingTxId);if(idx>=0)state.transactions[idx]={...state.transactions[idx],...payload,updatedAt:Date.now(),liabilityId:'',liabilityPrincipal:0,liabilityInterest:0};}else state.transactions.push({id:uid(),...payload,createdAt:Date.now()});
       saveState();haptic();el('transaction-dialog').close();editingTxId=null;render();toast('Transferencia guardada');return;
     }
@@ -1098,8 +1110,20 @@ button{cursor:pointer}
     const txId=editingTxId||uid();
     if(existing?.liabilityId) reverseLiabilityPayment(existing);
     if(payload.liabilityId){ const m=applyLiabilityPayment(payload.liabilityId, txId, amount, payload.date, payload.liabilityMode); payload.liabilityPrincipal=m.principal; payload.liabilityInterest=m.interest; }
-    const makeFixed=!editingTxId&&txType==='expense'&&!payload.liabilityId&&el('tx-make-fixed').checked;let recurringId=null;if(makeFixed){const fixedName=el('tx-fixed-name').value.trim()||payload.note||selectedCategory;const day=Math.max(1,Math.min(31,Number(payload.date.slice(8,10))||1));recurringId=uid();state.recurring.push({id:recurringId,name:fixedName,amount,day,category:selectedCategory,type:'expense',account:payload.account,active:true});}
-    if(editingTxId){const idx=state.transactions.findIndex(t=>t.id===editingTxId);if(idx>=0)state.transactions[idx]={...state.transactions[idx],...payload,updatedAt:Date.now()};}else state.transactions.push({id:txId,...payload,...(recurringId?{recurringId,fixedExpense:true}:{}),createdAt:Date.now()});const wasEditing=!!editingTxId;saveState();haptic();el('transaction-dialog').close();editingTxId=null;render();toast(payload.liabilityId?('Cuota aplicada a '+(getLiability(payload.liabilityId)?.name||'deuda')):(wasEditing?'Movimiento actualizado':makeFixed?'Movimiento y gasto fijo guardados':'Movimiento guardado'));
+    const existingRecurringId=existing?.recurringId||'';
+    const existingRecurring=existingRecurringId?state.recurring.find(r=>r.id===existingRecurringId):null;
+    const wantsFixed=txType!=='transfer'&&!payload.liabilityId&&!payload.splits&&el('tx-make-fixed').checked;
+    let recurringId=existingRecurringId;
+    if(wantsFixed){
+      const fixedName=el('tx-fixed-name').value.trim()||payload.note||selectedCategory;
+      const day=Math.max(1,Math.min(31,Number(payload.date.slice(8,10))||1));
+      const recurringPayload={name:fixedName,amount,day,category:selectedCategory,type:txType,account:payload.account,active:existingRecurring?.active!==false};
+      if(existingRecurring){Object.assign(existingRecurring,recurringPayload);}else{recurringId=uid();state.recurring.push({id:recurringId,...recurringPayload});}
+    }else if(existingRecurringId){
+      state.recurring=state.recurring.filter(r=>r.id!==existingRecurringId);recurringId='';
+    }
+    payload.recurringId=recurringId;payload.fixedExpense=Boolean(recurringId&&txType==='expense');payload.fixedMovement=Boolean(recurringId);
+    if(editingTxId){const idx=state.transactions.findIndex(t=>t.id===editingTxId);if(idx>=0)state.transactions[idx]={...state.transactions[idx],...payload,updatedAt:Date.now()};}else state.transactions.push({id:txId,...payload,createdAt:Date.now()});const wasEditing=!!editingTxId;saveState();haptic();el('transaction-dialog').close();editingTxId=null;render();toast(payload.liabilityId?('Cuota aplicada a '+(getLiability(payload.liabilityId)?.name||'deuda')):(wasEditing?(wantsFixed?'Movimiento y fijo actualizados':'Movimiento actualizado'):wantsFixed?((txType==='income'?'Ingreso':'Gasto')+' y fijo guardados'):'Movimiento guardado'));
   }
 
 
@@ -1249,7 +1273,7 @@ button{cursor:pointer}
   el('save-transaction').addEventListener('click',saveTransaction);
   el('tx-category-toggle').addEventListener('click',()=>{const grid=el('category-chips');const opening=grid.classList.contains('hidden');grid.classList.toggle('hidden',!opening);el('tx-category-toggle').setAttribute('aria-expanded',String(opening));});
   el('tx-liability-link').addEventListener('change',syncLiabilityFixedVisibility);
-  el('tx-split-toggle').addEventListener('change',()=>{const on=el('tx-split-toggle').checked;el('tx-split-extra').classList.toggle('hidden',!on);if(on){el('tx-make-fixed').checked=false;el('tx-fixed-extra').classList.add('hidden');el('tx-fixed-wrap').classList.add('hidden');if(!splitDraft.length)splitDraft=[newSplitPart(),newSplitPart()];renderSplitRows();}else{splitDraft=[];if(txType==='expense'&&!editingTxId)el('tx-fixed-wrap').classList.remove('hidden');}});
+  el('tx-split-toggle').addEventListener('change',()=>{const on=el('tx-split-toggle').checked;el('tx-split-extra').classList.toggle('hidden',!on);if(on){el('tx-make-fixed').checked=false;el('tx-fixed-extra').classList.add('hidden');el('tx-fixed-wrap').classList.add('hidden');if(!splitDraft.length)splitDraft=[newSplitPart(),newSplitPart()];renderSplitRows();}else{splitDraft=[];syncLiabilityFixedVisibility();}});
   el('add-split-row').addEventListener('click',()=>{splitDraft.push(newSplitPart());renderSplitRows();});
   el('tx-make-fixed').addEventListener('change',()=>{el('tx-fixed-extra').classList.toggle('hidden',!el('tx-make-fixed').checked);if(el('tx-make-fixed').checked&&!el('tx-fixed-name').value.trim())el('tx-fixed-name').value=el('tx-note').value.trim()||selectedCategory;});
   el('save-budget').addEventListener('click',saveBudget);
@@ -1259,15 +1283,7 @@ button{cursor:pointer}
   el('save-liability').addEventListener('click',saveLiability);
   el('run-import').addEventListener('click',runImport);
 
-  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-    let swReloading=false;
-    navigator.serviceWorker.addEventListener('controllerchange',()=>{
-      if(swReloading)return;
-      swReloading=true;
-      location.reload();
-    });
-    navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{});
-  }
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
   render();
 })();
 
