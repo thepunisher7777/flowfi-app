@@ -1259,7 +1259,15 @@ button{cursor:pointer}
   el('save-liability').addEventListener('click',saveLiability);
   el('run-import').addEventListener('click',runImport);
 
-  if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    let swReloading=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(swReloading)return;
+      swReloading=true;
+      location.reload();
+    });
+    navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{});
+  }
   render();
 })();
 
