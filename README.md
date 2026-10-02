@@ -1,17 +1,18 @@
-# FlowFi V30 — build verificada
+# FlowFi V30.1 — sin Pulso del ciclo
 
-Esta build conserva EXACTAMENTE la parte superior de FlowFi V29.2:
-- selector/periodo
+Cambio único de esta build:
+- se elimina por completo la tarjeta “Pulso del ciclo” del Inicio.
+
+Se mantiene tal cual:
+- selector y ciclo superior
 - círculo/orbita de categorías
-- posiciones, tamaños y estilos de las categorías
-- centro del círculo y porcentajes
+- posiciones, tamaños, iconos y porcentajes
 - Resumen financiero
+- 5 últimos movimientos
+- orden cronológico de movimientos
+- exclusión de movimientos futuros de “Últimos movimientos”
+- Próximos compromisos
+- botón flotante +
+- resto de FlowFi
 
-Cambios solo debajo del Resumen financiero:
-- elimina Acciones rápidas
-- añade Pulso del ciclo
-- amplía Últimos movimientos a 5
-- excluye movimientos futuros de Últimos movimientos
-- añade Próximos compromisos
-
-La clave de almacenamiento local no cambia, por lo que la actualización no borra los datos existentes.
+No cambia la clave de almacenamiento local ni el modelo de datos, por lo que esta actualización no borra los datos existentes.
