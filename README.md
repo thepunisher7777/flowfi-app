@@ -1,15 +1,14 @@
-# Ledger V31.2 · by ARX
+# Ledger V31.3 · Calendar hotfix
 
-Esta build parte directamente de la FlowFi V30.1 original.
+Corrección:
+- En el detalle del calendario, los movimientos 2º, 3º, 4º... podían mostrarse como 0,00 € aunque su importe real fuese correcto.
+- La causa era `dayTx.map(transactionRow)`, que pasaba el índice del array como segundo parámetro de `transactionRow`.
+- Se cambia a `dayTx.map(t => transactionRow(t))`.
 
-Cambios únicamente de branding:
-- FlowFi → Ledger
-- logo superior → ARX con las dimensiones originales
-- centro del círculo → LEDGER
-- marca de agua → ARX + Ledger by ARX
-- iconos PWA → ARX
-- nombres de exportación → Ledger
-
-No se ha cambiado el layout, navegación, posiciones, tamaños, círculo de categorías ni tarjetas.
-
-La clave local `flowfi.public.v27` se mantiene para conservar los datos existentes.
+No se modifica:
+- datos
+- layout
+- branding Ledger by ARX
+- categorías
+- navegación
+- clave local `flowfi.public.v27`
