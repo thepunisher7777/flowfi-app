@@ -1,11 +1,15 @@
-# Ledger V31.1 · by ARX
+# Ledger V31.2 · by ARX
 
-Corrección del rebranding:
-- cabecera y estilos originales restaurados;
-- icono ARX vuelve a su tamaño normal;
-- círculo superior intacto;
-- texto central: LEDGER;
-- marca de agua sutil: Ledger by ARX;
-- clave local `flowfi.public.v27` preservada para mantener los datos.
+Esta build parte directamente de la FlowFi V30.1 original.
 
-Sube todos los archivos de esta carpeta a la raíz del repositorio.
+Cambios únicamente de branding:
+- FlowFi → Ledger
+- logo superior → ARX con las dimensiones originales
+- centro del círculo → LEDGER
+- marca de agua → ARX + Ledger by ARX
+- iconos PWA → ARX
+- nombres de exportación → Ledger
+
+No se ha cambiado el layout, navegación, posiciones, tamaños, círculo de categorías ni tarjetas.
+
+La clave local `flowfi.public.v27` se mantiene para conservar los datos existentes.
