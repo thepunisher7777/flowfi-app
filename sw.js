@@ -7,6 +7,7 @@ const CORE=[
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png',
+  './posthog-stub.js',
   './posthog-bridge.js',
   './arx-analytics-guard.js'
 ];
