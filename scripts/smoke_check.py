@@ -11,6 +11,7 @@ REQUIRED = [
     "ledger-core.html",
     "manifest.webmanifest",
     "sw.js",
+    "posthog-stub.js",
     "posthog-bridge.js",
     "arx-analytics-guard.js",
     "README.md",
@@ -62,6 +63,7 @@ for marker in [
     "<title>Ledger</title>",
     "const RELEASE='Beta 1.2';",
     "./ledger-core.html",
+    "./posthog-stub.js",
     "./posthog-bridge.js",
     "./arx-analytics-guard.js",
     "https://arx.local/telemetry",
@@ -70,7 +72,13 @@ for marker in [
 ]:
     if marker not in bootstrap:
         fail(f"index.html bootstrap is missing release invariant: {marker}")
-ok("Bootstrap loads analytics before the preserved Ledger core")
+if not (
+    bootstrap.find("./posthog-stub.js")
+    < bootstrap.find("./posthog-bridge.js")
+    < bootstrap.find("./arx-analytics-guard.js")
+):
+    fail("Analytics runtime scripts must load in stub -> bridge -> guard order")
+ok("Bootstrap loads the supported analytics runtime before the preserved Ledger core")
 
 core = (ROOT / "ledger-core.html").read_text(encoding="utf-8")
 for marker in [
@@ -110,6 +118,7 @@ for asset in [
     "./icon-192.png",
     "./icon-512.png",
     "./apple-touch-icon.png",
+    "./posthog-stub.js",
     "./posthog-bridge.js",
     "./arx-analytics-guard.js",
 ]:
@@ -118,6 +127,14 @@ for asset in [
 if "networkFirst" not in sw:
     fail("Service worker must keep the release shell/core network-first")
 ok("Service worker caches the complete Beta 1.2 runtime")
+
+stub = (ROOT / "posthog-stub.js").read_text(encoding="utf-8")
+for marker in ["window.posthog", "root.init", "static/array.js", "root.__SV = 1"]:
+    if marker not in stub:
+        fail(f"PostHog browser stub is missing supported bootstrap marker: {marker}")
+if "flowfi.public.v27" in stub:
+    fail("PostHog stub must not access Ledger finance state")
+ok("PostHog browser stub is isolated from finance state")
 
 bridge = (ROOT / "posthog-bridge.js").read_text(encoding="utf-8")
 for marker in [
