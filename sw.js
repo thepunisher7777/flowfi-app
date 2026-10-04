@@ -1,63 +1,13 @@
-const CACHE='ledger-beta-1-2-arx-analytics';
-const CORE=[
-  './',
-  './index.html',
-  './ledger-core.html',
-  './manifest.webmanifest',
-  './icon-192.png',
-  './icon-512.png',
-  './apple-touch-icon.png',
-  './posthog-stub.js',
-  './posthog-bridge.js',
-  './arx-analytics-guard.js'
-];
-
-self.addEventListener('install',event=>event.waitUntil(
-  caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())
-));
-
-self.addEventListener('activate',event=>event.waitUntil(
-  caches.keys()
-    .then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
-    .then(()=>self.clients.claim())
-));
-
-async function networkFirst(request,fallbackKey){
-  try{
-    const response=await fetch(request,{cache:'no-store'});
-    if(response && response.ok){
-      const copy=response.clone();
-      caches.open(CACHE).then(cache=>cache.put(fallbackKey||request,copy));
-    }
-    return response;
-  }catch(error){
-    const cached=await caches.match(fallbackKey||request);
-    if(cached) return cached;
-    throw error;
-  }
-}
-
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET') return;
-  const url=new URL(event.request.url);
-
-  if(event.request.mode==='navigate'){
-    event.respondWith(networkFirst(event.request,'./index.html'));
+const CACHE='flowfi-ledger-migration-v1';
+const CACHE_PREFIX='flowfi-ledger-migration-';
+const CORE=['./','./index.html','./manifest.webmanifest','./ledger-icon-192-v2.png','./ledger-icon-512-v2.png','./ledger-apple-touch-v2.png'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith(CACHE_PREFIX)&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET') return;
+  if(e.request.mode==='navigate'){
+    e.respondWith(fetch(e.request,{cache:'no-store'}).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return r;}).catch(()=>caches.match('./index.html')));
     return;
   }
-
-  if(url.origin===self.location.origin && url.pathname.endsWith('/ledger-core.html')){
-    event.respondWith(networkFirst(event.request,'./ledger-core.html'));
-    return;
-  }
-
-  event.respondWith(
-    caches.match(event.request).then(hit=>hit||fetch(event.request).then(response=>{
-      if(response && response.ok && url.origin===self.location.origin){
-        const copy=response.clone();
-        caches.open(CACHE).then(cache=>cache.put(event.request,copy));
-      }
-      return response;
-    }))
-  );
+  e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r;})));
 });
