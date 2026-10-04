@@ -6,7 +6,7 @@
 
   const CONSENT_KEY = 'ledger.analytics.consent.v1';
   const VIRTUAL_ORIGIN = 'https://arx.local';
-  const VIRTUAL_PREFIX = '/telemetry/';
+  const VIRTUAL_PREFIX = '/telemetry/ledger/';
   const LEGACY_TRANSPORT = 'https://counterapi.com/api';
   const LEGACY_NAMESPACE = 'thepunisher7777.github.io';
   const priorFetch = window.fetch.bind(window);
@@ -64,9 +64,9 @@
     let parsed;
     try{parsed=new URL(url,location.href);}catch{return null;}
     if(parsed.origin!==VIRTUAL_ORIGIN || !parsed.pathname.startsWith(VIRTUAL_PREFIX)) return null;
-    const parts=parsed.pathname.split('/').filter(Boolean).map(decodeURIComponent);
-    if(parts.length<4 || parts[0]!=='telemetry' || parts[1]!=='ledger') return null;
-    const action=parts[2],key=parts[3]||'event';
+    const parts=parsed.pathname.slice(VIRTUAL_PREFIX.length).split('/').filter(Boolean).map(decodeURIComponent);
+    if(parts.length<2) return null;
+    const action=parts[0], key=parts[1]||'event';
     if(!action.startsWith('ledger-')) return null;
     const q=parsed.searchParams.toString();
     return `${LEGACY_TRANSPORT}/${encodeURIComponent(LEGACY_NAMESPACE)}/${encodeURIComponent(action)}/${encodeURIComponent(key)}${q?`?${q}`:''}`;
@@ -83,6 +83,6 @@
   };
 
   window.addEventListener('storage',event=>{if(event.key===CONSENT_KEY)setTimeout(hardenPostHog,0);});
-  setInterval(hardenPostHog,750);
+  setInterval(hardenPostHog,1000);
   hardenPostHog();
 })();

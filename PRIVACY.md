@@ -1,62 +1,26 @@
-# Privacy — LEDGER by ARX
+# Privacidad de LEDGER by ARX
 
-Ledger is local-first. Financial data is stored in the user's browser/device unless the user explicitly exports it.
+Ledger es una PWA local-first. Los movimientos, importes, cuentas, saldos, presupuestos, objetivos, notas y deudas se guardan localmente en el dispositivo salvo que el usuario exporte una copia manualmente.
 
-## Financial data
+## Analítica opcional
 
-Ledger does **not** send the following to analytics:
+La analítica de la beta es opt-in. Solo se activa tras consentimiento explícito y puede desactivarse desde Ajustes.
 
-- transactions or transaction amounts
-- categories or notes
-- account names or balances
-- budgets
-- loans, debts or repayment amounts
-- imported/exported finance files
+Proveedor: PostHog EU Cloud.
 
-The local storage key remains `flowfi.public.v27` for compatibility with existing installs.
+Controles:
+- autocapture desactivado
+- pageviews automáticos desactivados
+- grabación de sesión desactivada
+- heatmaps desactivados
+- captura de consola desactivada
+- captura de rendimiento desactivada
+- perfiles personales desactivados
+- sin nombre ni email enviados por Ledger
+- allowlist de propiedades técnicas/producto
 
-## Optional beta analytics
+Eventos permitidos: sesiones, versión, plataforma, pantallas, uso de funciones, instalación y errores técnicos.
 
-Beta analytics are **opt-in**. A user must explicitly allow anonymous analytics before Ledger forwards product telemetry, and can disable it later from Settings.
+Nunca deben enviarse a analítica importes, movimientos, categorías financieras, notas, nombres de cuentas, saldos, presupuestos, deudas, archivos importados/exportados ni texto libre del usuario.
 
-Allowed telemetry is limited to technical/product events such as:
-
-- app/session opens
-- active-user activity
-- app version
-- broad platform class
-- screen names
-- feature-use counters
-- PWA installation events
-- sanitized technical error counters
-
-No analytics event should include free-form user text or financial values.
-
-## Analytics provider and controls
-
-Approved telemetry is routed to **PostHog EU Cloud** through the ARX analytics layer.
-
-The PostHog project is configured with privacy-first defaults:
-- IP anonymization enabled
-- autocapture disabled
-- automatic page views disabled by the client
-- session recording disabled
-- heatmaps disabled
-- console capture disabled
-- performance capture disabled
-
-The client also disables automatic interaction capture, page-leave capture, exception capture, session recording and person profiles for this telemetry layer. The ARX analytics guard synchronizes opt-out state and applies an allowlist to Ledger event properties when the SDK is active.
-
-Ledger does not intentionally identify testers by name or email through analytics.
-
-## Compatibility transport
-
-Beta 1.2 preserves the existing finance core byte-for-byte and upgrades its legacy analytics calls at the bootstrap boundary before the core executes. The old counter URL shape is used only as an internal compatibility transport between local scripts; CounterAPI is not used as the external analytics backend.
-
-## Backups and exports
-
-Backups, CSV exports and Excel exports are created on-device and only leave the device when the user chooses where to save/share them.
-
-## Security reports
-
-Do not publish sensitive user data in a public issue. For a security problem, provide a minimal reproduction without real financial information.
+La clave local histórica `flowfi.public.v27` se conserva únicamente por compatibilidad de datos durante la migración FlowFi → Ledger.

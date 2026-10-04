@@ -86,7 +86,7 @@
     const appVersion = parsed.searchParams.get('appVersion') || 'unknown';
     const properties = {
       product: 'ledger',
-      telemetry_schema: 2,
+      telemetry_schema: 3,
       legacy_action: action,
       event_key: key || 'event',
       app_version: appVersion

@@ -1,12 +1,10 @@
-# FlowFi → Ledger Migration Bridge
+# FlowFi → Ledger Migration Bridge · Beta 1.3
 
-SUBIR SOLO AL REPO ANTIGUO: `flowfi-app`
+Repositorio antiguo de transición.
 
-- Convierte visualmente FlowFi en Ledger.
-- Conserva `flowfi.public.v27`.
-- Añade un botón de migración.
-- Obliga a guardar una copia JSON antes de abrir la nueva Ledger.
-- No sube datos financieros a ningún servidor.
-- Mantén `flowfi-app` publicado durante la transición.
+- Los datos locales permanecen bajo `flowfi.public.v27`.
+- El usuario debe guardar un JSON antes de abrir la nueva Ledger.
+- La analítica técnica opcional usa PostHog EU mediante consentimiento explícito.
+- No borres este repo mientras existan usuarios antiguos.
 
 Destino: https://thepunisher7777.github.io/ledger-app/?migration=flowfi
