@@ -1,5 +1,5 @@
-const CACHE='ledger-app-beta-1-3';
-const CACHE_PREFIX='ledger-app-';
+const CACHE='flowfi-ledger-migration-beta-1-3';
+const CACHE_PREFIX='flowfi-ledger-migration-';
 const CORE=['./','./index.html','./manifest.webmanifest','./ledger-icon-192-v2.png','./ledger-icon-512-v2.png','./ledger-apple-touch-v2.png','./posthog-stub.js','./posthog-bridge.js','./arx-analytics-guard.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith(CACHE_PREFIX)&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
