@@ -13,11 +13,11 @@ Ledger does **not** send the following to analytics:
 - loans, debts or repayment amounts
 - imported/exported finance files
 
-The current local storage key remains `flowfi.public.v27` for compatibility with existing installs.
+The local storage key remains `flowfi.public.v27` for compatibility with existing installs.
 
 ## Optional beta analytics
 
-Beta analytics are opt-in. A user must explicitly allow anonymous analytics before events are sent, and can disable them later from Settings.
+Beta analytics are **opt-in**. A user must explicitly allow anonymous analytics before Ledger forwards product telemetry, and can disable it later from Settings.
 
 Allowed telemetry is limited to technical/product events such as:
 
@@ -32,11 +32,26 @@ Allowed telemetry is limited to technical/product events such as:
 
 No analytics event should include free-form user text or financial values.
 
-## Analytics provider
+## Analytics provider and controls
 
-Ledger routes approved telemetry to PostHog EU Cloud. Automatic interaction capture, automatic page views and session recording are disabled. The application only forwards the explicit technical events defined by Ledger's consent flow.
+Approved telemetry is routed to **PostHog EU Cloud** through the ARX analytics layer.
 
-The PostHog project is configured to anonymize IP addresses. Ledger does not intentionally identify testers by name or email through this telemetry layer.
+The PostHog project is configured with privacy-first defaults:
+- IP anonymization enabled
+- autocapture disabled
+- automatic page views disabled by the client
+- session recording disabled
+- heatmaps disabled
+- console capture disabled
+- performance capture disabled
+
+The client also disables automatic interaction capture, page-leave capture, exception capture, session recording and person profiles for this telemetry layer. The ARX analytics guard synchronizes opt-out state and applies an allowlist to Ledger event properties when the SDK is active.
+
+Ledger does not intentionally identify testers by name or email through analytics.
+
+## Compatibility transport
+
+Beta 1.2 preserves the existing finance core byte-for-byte and upgrades its legacy analytics calls at the bootstrap boundary before the core executes. The old counter URL shape is used only as an internal compatibility transport between local scripts; CounterAPI is not used as the external analytics backend.
 
 ## Backups and exports
 
