@@ -1,10 +1,10 @@
 # LEDGER by ARX — Beta 1.1
 
-Local-first personal finance PWA focused on fast expense tracking, financial cycles, planning, debt visibility and useful statistics without turning personal finance into accounting software.
+Local-first personal finance PWA focused on fast expense tracking, configurable financial cycles, planning, debt visibility and useful statistics.
 
 ## Current release
 
-**Beta 1.1** adds optional anonymous analytics for early testers while preserving the existing local data model and storage key `flowfi.public.v27`.
+Beta 1.1 preserves the existing local data model and storage key `flowfi.public.v27`.
 
 ### Core
 - transactions, transfers and categories
@@ -18,33 +18,20 @@ Local-first personal finance PWA focused on fast expense tracking, financial cyc
 - PWA installation and offline cache
 - local backup / recovery safeguards
 
-### Beta analytics
-Analytics are **opt-in**. With consent, Ledger can count sessions, active users, installations, app version, broad platform, screens, feature usage and sanitized technical errors.
+### Optional beta analytics
+Analytics are opt-in. Ledger routes approved product telemetry to PostHog EU Cloud through `posthog-bridge.js`.
 
-Ledger does **not** send transactions, amounts, categories, notes, account names, balances, budgets, loans/debts or imported/exported finance files.
+Automatic interaction capture, automatic page views and session recording are disabled. Only the technical events allowed by the in-app consent flow are forwarded.
 
-See [PRIVACY.md](PRIVACY.md) for the telemetry contract.
+Financial records remain local to the device unless the user explicitly exports them. See [PRIVACY.md](PRIVACY.md) for the telemetry contract.
 
-## Beta metrics
+## Metrics
 
-The current provisional beta panel is available at:
-
-https://thepunisher7777.github.io/flowfi-app/metrics.html
-
-The counter-based analytics backend is intended only for early testing. Before broad public distribution it should be replaced by **ARX Metrics / PostHog**.
+The old public counter reader has been retired. `metrics.html` is now a public status page; operational analytics are kept in the private ARX analytics environment.
 
 ## Quality checks
 
-Every pull request and push to `main` runs lightweight release smoke checks that verify:
-
-- required release files
-- Ledger PWA identity and GitHub Pages scope
-- preservation of `flowfi.public.v27`
-- service-worker core assets
-- PWA icon dimensions
-- separation between metrics and local financial state
-
-Run locally with:
+Pull requests and pushes to `main` run release smoke checks for PWA identity, storage compatibility, analytics privacy invariants, service-worker assets and icon dimensions.
 
 ```bash
 python scripts/smoke_check.py
@@ -55,6 +42,7 @@ python scripts/smoke_check.py
 - `index.html`
 - `manifest.webmanifest`
 - `sw.js`
+- `posthog-bridge.js`
 - `metrics.html`
 - `icon-192.png`
 - `icon-512.png`

@@ -22,7 +22,7 @@ Beta analytics are opt-in. A user must explicitly allow anonymous analytics befo
 Allowed telemetry is limited to technical/product events such as:
 
 - app/session opens
-- active-user counters
+- active-user activity
 - app version
 - broad platform class
 - screen names
@@ -32,9 +32,11 @@ Allowed telemetry is limited to technical/product events such as:
 
 No analytics event should include free-form user text or financial values.
 
-## Current analytics status
+## Analytics provider
 
-Beta 1.1 uses a lightweight counter-based analytics layer for early testing. This is considered provisional infrastructure and should be replaced by ARX Metrics / PostHog before broad public distribution.
+Ledger routes approved telemetry to PostHog EU Cloud. Automatic interaction capture, automatic page views and session recording are disabled. The application only forwards the explicit technical events defined by Ledger's consent flow.
+
+The PostHog project is configured to anonymize IP addresses. Ledger does not intentionally identify testers by name or email through this telemetry layer.
 
 ## Backups and exports
 

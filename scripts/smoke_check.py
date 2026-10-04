@@ -10,6 +10,7 @@ REQUIRED = [
     "index.html",
     "manifest.webmanifest",
     "sw.js",
+    "posthog-bridge.js",
     "README.md",
     "metrics.html",
     "icon-192.png",
@@ -66,12 +67,32 @@ for marker in [
 ok("Brand, storage compatibility, consent and service-worker invariants are present")
 
 sw = (ROOT / "sw.js").read_text(encoding="utf-8")
-if "ledger-beta-1-1-analytics" not in sw:
-    fail("Service worker cache version is not the expected Ledger Beta 1.1 cache")
-for asset in ["./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"]:
+if "ledger-beta-1-1-posthog" not in sw:
+    fail("Service worker cache version is not the expected PostHog-enabled cache")
+for asset in ["./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./posthog-bridge.js"]:
     if asset not in sw:
         fail(f"Service worker core cache is missing {asset}")
-ok("Service worker core cache is complete")
+if "posthog-bridge.js" not in sw or "injectPostHogBridge" not in sw:
+    fail("Service worker does not inject the PostHog bridge")
+ok("Service worker cache and analytics bridge injection are present")
+
+bridge = (ROOT / "posthog-bridge.js").read_text(encoding="utf-8")
+for marker in [
+    "https://eu.i.posthog.com",
+    "autocapture: false",
+    "capture_pageview: false",
+    "capture_pageleave: false",
+    "disable_session_recording: true",
+    "person_profiles: 'never'",
+    "opt_out_capturing_by_default: true",
+    "ledger.analytics.consent.v1",
+]:
+    if marker not in bridge:
+        fail(f"PostHog bridge is missing privacy invariant: {marker}")
+for forbidden in ["state.transactions", "state.liabilities", "flowfi.public.v27"]:
+    if forbidden in bridge:
+        fail(f"PostHog bridge must not access finance state: {forbidden}")
+ok("PostHog bridge privacy invariants are present")
 
 sizes = {
     "icon-192.png": (192, 192),
@@ -85,9 +106,9 @@ for name, expected_size in sizes.items():
 ok("PWA icon dimensions are correct")
 
 metrics = (ROOT / "metrics.html").read_text(encoding="utf-8")
-for forbidden in ["localStorage.getItem('flowfi.public.v27')", "state.transactions", "state.liabilities"]:
+for forbidden in ["localStorage.getItem('flowfi.public.v27')", "state.transactions", "state.liabilities", "counterapi.com"]:
     if forbidden in metrics:
-        fail(f"metrics.html must not access finance state: {forbidden}")
-ok("Metrics panel remains separated from local finance state")
+        fail(f"metrics.html must not access finance state or the retired counter backend: {forbidden}")
+ok("Public metrics status page is separated from local finance state")
 
 print("\nLedger smoke checks passed.")
