@@ -27,7 +27,7 @@
       html=html.replaceAll('LEDGER by ARX · Beta 1.1','LEDGER by ARX · Beta 1.2');
       if(html.includes('https://counterapi.com/api')) throw new Error('Legacy analytics endpoint survived bootstrap migration');
       if(!html.includes("const STORAGE_KEY = 'flowfi.public.v27';")) throw new Error('Ledger storage compatibility marker missing');
-      const runtimeScripts='  <script src="./posthog-bridge.js"><\/script>\n  <script src="./arx-analytics-guard.js"><\/script>\n';
+      const runtimeScripts='  <script src="./posthog-stub.js"><\/script>\n  <script src="./posthog-bridge.js"><\/script>\n  <script src="./arx-analytics-guard.js"><\/script>\n';
       if(!html.includes('arx-analytics-guard.js')) html=html.replace('</head>',runtimeScripts+'</head>');
       return html;
     }
