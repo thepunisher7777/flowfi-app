@@ -24,7 +24,8 @@ Ledger now uses a small bootstrap boundary:
 
 - `index.html` — public bootstrap and release boundary
 - `ledger-core.html` — existing Ledger application core, preserved byte-for-byte for data safety
-- `posthog-bridge.js` — PostHog EU transport bridge
+- `posthog-stub.js` — supported PostHog browser bootstrap queue
+- `posthog-bridge.js` — PostHog EU transport bridge and public project configuration
 - `arx-analytics-guard.js` — consent synchronization and privacy hardening
 - `sw.js` — offline cache and network-first release shell
 
@@ -73,6 +74,7 @@ python scripts/smoke_check.py
 - `ledger-core.html`
 - `manifest.webmanifest`
 - `sw.js`
+- `posthog-stub.js`
 - `posthog-bridge.js`
 - `arx-analytics-guard.js`
 - `metrics.html`
