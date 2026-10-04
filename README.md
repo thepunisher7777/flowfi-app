@@ -1,10 +1,12 @@
-# FlowFi → Ledger Migration Bridge · Beta 1.3
+# LEDGER by ARX · Beta 1.3
 
-Repositorio antiguo de transición.
+PWA local-first de finanzas personales.
 
-- Los datos locales permanecen bajo `flowfi.public.v27`.
-- El usuario debe guardar un JSON antes de abrir la nueva Ledger.
-- La analítica técnica opcional usa PostHog EU mediante consentimiento explícito.
-- No borres este repo mientras existan usuarios antiguos.
+## Beta 1.3
+- PostHog EU opt-in para analítica técnica/producto.
+- Sin autocapture ni grabación de sesión.
+- Sin datos financieros en telemetría.
+- Receptor seguro de migración FlowFi → Ledger.
+- Clave histórica `flowfi.public.v27` conservada por compatibilidad.
 
-Destino: https://thepunisher7777.github.io/ledger-app/?migration=flowfi
+App: https://thepunisher7777.github.io/ledger-app/

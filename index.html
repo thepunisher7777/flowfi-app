@@ -129,16 +129,7 @@ button{cursor:pointer}
 .analytics-consent-actions button{min-height:46px}
 .analytics-status{font-size:10px;font-weight:850}.analytics-status.on{color:#62d997}.analytics-status.off{color:var(--muted)}
 @media(max-width:390px){.analytics-consent-actions{grid-template-columns:1fr}}
-
-.migration-bridge{position:relative;z-index:18;margin:0 auto 10px;max-width:728px;padding:0 16px}
-.migration-bridge-card{padding:12px 13px;border:1px solid rgba(89,173,255,.30);border-radius:15px;background:linear-gradient(135deg,rgba(14,43,72,.97),rgba(8,23,40,.97));box-shadow:0 14px 34px rgba(0,0,0,.20)}
-.migration-bridge-inner{display:flex;align-items:center;gap:11px}
-.migration-bridge-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(89,173,255,.10);font-size:17px;flex:0 0 auto}
-.migration-bridge-copy{min-width:0;flex:1}.migration-bridge-copy b{display:block;font-size:12px}.migration-bridge-copy span{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin-top:2px}
-.migration-bridge button{border:1px solid rgba(89,173,255,.28);background:rgba(89,173,255,.10);color:#a9d7ff;border-radius:10px;padding:9px 10px;font-size:10px;font-weight:850;white-space:nowrap}
-.migration-steps{display:grid;gap:9px;margin-top:12px}.migration-step{padding:11px;border:1px solid var(--line);border-radius:12px;background:rgba(7,17,31,.42)}.migration-step b{display:block;font-size:12px;margin-bottom:4px}.migration-step p{margin:0;color:var(--muted);font-size:11px;line-height:1.45}.migration-step button{width:100%;margin-top:9px}
-.migration-safe-note{font-size:10px;line-height:1.45;color:#9ab2ca;margin-top:10px}.migration-safe-note strong{color:#ddecfa}
-
+.migration-receiver-note{margin:0 0 12px;padding:11px 12px;border:1px solid rgba(89,173,255,.24);border-radius:12px;background:rgba(89,173,255,.07);color:#b8dfff;font-size:11px;line-height:1.45}
 .feedback-textarea{width:100%;min-height:150px;resize:vertical;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:12px 13px;outline:none;font:inherit;line-height:1.45}.feedback-meta{font-size:10px;color:var(--muted);line-height:1.45;margin:8px 0 12px}.beta-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(91,183,255,.22);border-radius:9px;background:rgba(91,183,255,.07);color:#9dd4ff;font-size:10px;font-weight:850;letter-spacing:.06em}.safety-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.safety-row button{flex:1;min-width:130px}.pwa-state{font-size:10px;font-weight:850;color:#9dd4ff}.settings-copy .privacy-note{color:#7f9ab5;font-size:9px;margin-top:3px}
 
 </style>
@@ -161,19 +152,6 @@ button{cursor:pointer}
         <div id="month-dropdown-menu" class="month-dropdown-menu hidden" role="menu" aria-label="Elegir periodo"></div>
       </div>
     </header>
-
-    <section class="migration-bridge">
-      <div class="migration-bridge-card">
-        <div class="migration-bridge-inner">
-          <div class="migration-bridge-icon">↗</div>
-          <div class="migration-bridge-copy">
-            <b>FlowFi ahora es Ledger</b>
-            <span>Tus datos siguen aquí. Migra de forma segura a la nueva dirección.</span>
-          </div>
-          <button id="open-migration">Migrar</button>
-        </div>
-      </div>
-    </section>
 
     <main id="main" class="main"></main>
 
@@ -379,30 +357,6 @@ button{cursor:pointer}
     </form>
   </dialog>
 
-
-  <dialog id="migration-dialog" class="sheet small-sheet">
-    <form method="dialog">
-      <div class="sheet-head">
-        <div><div class="eyebrow">MIGRACIÓN SEGURA</div><h2>FlowFi → Ledger</h2></div>
-        <button type="button" class="icon-btn" data-close="migration-dialog">✕</button>
-      </div>
-      <div class="notice">No borres esta app hasta comprobar que tus movimientos aparecen correctamente en la nueva Ledger.</div>
-      <div class="migration-steps">
-        <div class="migration-step">
-          <b>1. Guarda una copia completa</b>
-          <p>Incluye movimientos, cuentas, presupuestos, fijos, objetivos y préstamos.</p>
-          <button id="migration-backup" type="button" class="secondary-btn">Guardar copia JSON</button>
-        </div>
-        <div class="migration-step">
-          <b>2. Abre la nueva Ledger</b>
-          <p>El nuevo Ledger te pedirá automáticamente el archivo que acabas de guardar.</p>
-          <button id="migration-open-new" type="button" class="primary-btn" disabled>Abrir nueva Ledger</button>
-        </div>
-      </div>
-      <div class="migration-safe-note"><strong>Privacidad:</strong> la copia se descarga directamente en tu dispositivo. Ledger no la sube a ningún servidor.</div>
-    </form>
-  </dialog>
-
   <div id="toast" class="toast" role="status"></div>
   <script src="posthog-stub.js"></script>
 <script src="posthog-bridge.js"></script>
@@ -412,10 +366,8 @@ button{cursor:pointer}
   'use strict';
 
   const VERSION = 2;
-  const APP_VERSION = 'Beta 1.3 · Migration Bridge';
+  const APP_VERSION = 'Beta 1.3';
   const STORAGE_KEY = 'flowfi.public.v27';
-  const MIGRATION_BACKUP_KEY='ledger.migration.backup.created.v1';
-  const LEDGER_NEW_URL='https://thepunisher7777.github.io/ledger-app/?migration=flowfi';
   const SAFETY_BACKUP_KEY = STORAGE_KEY + '.safety';
   const CORRUPT_BACKUP_KEY = STORAGE_KEY + '.corrupt';
 
@@ -1154,6 +1106,25 @@ button{cursor:pointer}
     el('loan-back').addEventListener('click',()=>setRoute('plan'));el('loan-edit').addEventListener('click',()=>openLiability(l.id));el('loan-pay').addEventListener('click',()=>{pendingLiabilityLinkId=l.id;openTransaction('expense');});el('loan-extra-monthly').addEventListener('input',updateSim);el('loan-oneoff').addEventListener('input',updateSim);updateSim();
   }
 
+
+  function maybeStartFlowFiMigration(){
+    const params=new URLSearchParams(location.search);
+    if(params.get('migration')!=='flowfi')return;
+    analyticsTrackFeature('migration-receiver-open');
+    setTimeout(()=>{
+      const d=el('import-dialog');
+      if(!d)return;
+      const h=d.querySelector('h2'); if(h)h.textContent='Restaurar datos de FlowFi';
+      const status=el('import-status');
+      if(status){
+        status.classList.remove('hidden');
+        status.innerHTML='<div class="migration-receiver-note"><b>Migración FlowFi → Ledger</b><br>Selecciona el archivo <b>ledger-migration-….json</b> que acabas de guardar. No borres la app antigua hasta comprobar tus movimientos.</div>';
+      }
+      el('import-file').value='';
+      d.showModal();
+    },500);
+  }
+
   function renderSettings(){
     const details=accountDetails(); const weekdays=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
     const custom=(state.customCategories||[]).map(c=>`<div class="simple-row"><span class="category-icon">${escapeHtml(c.icon||'✦')}</span><div class="row-main"><div class="row-title">${escapeHtml(c.name)}</div><div class="row-sub">${c.type==='income'?'Ingreso':'Gasto'} · color persistente</div></div><button class="delete-btn" data-delete-custom-cat="${c.id}">×</button></div>`).join('');
@@ -1392,20 +1363,6 @@ button{cursor:pointer}
     const files=[{name:'[Content_Types].xml',data:contentTypes},{name:'_rels/.rels',data:rootRels},{name:'xl/workbook.xml',data:workbook},{name:'xl/_rels/workbook.xml.rels',data:wbRels},...sheets.map((s,i)=>({name:`xl/worksheets/sheet${i+1}.xml`,data:xlsxSheet(s.rows)}))];
     const blob=zipStore(files),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`ledger-${isoLocal()}.xlsx`;a.click();setTimeout(()=>URL.revokeObjectURL(url),800);toast('Excel preparado');
   }
-
-  function migrationBackup(){
-    const backup={...JSON.parse(JSON.stringify(state)),_meta:{app:'Ledger',brand:'ARX',appVersion:APP_VERSION,schemaVersion:VERSION,exportedAt:new Date().toISOString(),migrationFrom:'flowfi-app'}};
-    download(`ledger-migration-${isoLocal()}.json`,JSON.stringify(backup,null,2),'application/json');analyticsTrackFeature('migration-backup');
-    try{localStorage.setItem(MIGRATION_BACKUP_KEY,new Date().toISOString());}catch{}
-    el('migration-open-new').disabled=false;
-    toast('Copia guardada · ya puedes abrir Ledger');
-  }
-  function openLedgerMigration(){
-    analyticsTrackFeature('migration-open-ledger');
-    const w=window.open(LEDGER_NEW_URL,'_blank');
-    if(!w) location.href=LEDGER_NEW_URL;
-  }
-
   function exportJSON(){ analyticsTrackFeature('export-json'); const backup={...JSON.parse(JSON.stringify(state)),_meta:{app:'Ledger',brand:'ARX',appVersion:APP_VERSION,schemaVersion:VERSION,exportedAt:new Date().toISOString()}};download(`ledger-backup-${isoLocal()}.json`,JSON.stringify(backup,null,2),'application/json'); }
   function dateDMY(v){const [y,m,d]=v.split('-');return `${d}/${m}/${y}`;}
   function csvCell(v){const s=String(v??''); return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;}
@@ -1460,9 +1417,6 @@ button{cursor:pointer}
   el('save-goal').addEventListener('click',saveGoal);
   el('save-liability').addEventListener('click',saveLiability);
   el('run-import').addEventListener('click',runImport);
-  el('open-migration').addEventListener('click',()=>el('migration-dialog').showModal());
-  el('migration-backup').addEventListener('click',migrationBackup);
-  el('migration-open-new').addEventListener('click',openLedgerMigration);
   el('send-feedback').addEventListener('click',sendFeedback);
   el('analytics-accept').addEventListener('click',()=>{analyticsSetConsent(true);el('analytics-dialog').close();toast('Analítica anónima activada');});
   el('analytics-decline').addEventListener('click',()=>{analyticsSetConsent(false);el('analytics-dialog').close();});
@@ -1471,8 +1425,7 @@ button{cursor:pointer}
   window.addEventListener('error',()=>analyticsEmit('ledger-error','javascript'));
   window.addEventListener('unhandledrejection',()=>analyticsEmit('ledger-error','promise'));
   if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>analyticsEmit('ledger-error','service-worker'));
-  render();analyticsMaybeAsk();
-  try{if(localStorage.getItem(MIGRATION_BACKUP_KEY))el('migration-open-new').disabled=false;}catch{}if(bootRecoveryNotice)setTimeout(()=>toast(bootRecoveryNotice),500);
+  render();analyticsMaybeAsk();maybeStartFlowFiMigration();if(bootRecoveryNotice)setTimeout(()=>toast(bootRecoveryNotice),500);
 })();
 
 </script>
