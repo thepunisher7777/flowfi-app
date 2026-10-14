@@ -1,0 +1,31 @@
+name: "J.A.R.V.I.S. - Gemini Agent"
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "¿Qué cambio quieres que haga en el repositorio?"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  jarvis-coder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install -g @google/gemini-cli
+      - env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          USER_PROMPT: ${{ github.event.inputs.prompt }}
+        run: |
+          git config user.name "J.A.R.V.I.S."
+          git config user.email "actions@github.com"
+          gemini -y -p "Modifica los archivos del repositorio para cumplir esto sin romper nada: ${USER_PROMPT}"
+          git add -A
+          git diff --staged --quiet || (git commit -m "feat(jarvis): ${USER_PROMPT}" && git push origin HEAD:main)
